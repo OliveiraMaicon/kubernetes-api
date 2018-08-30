@@ -3,6 +3,7 @@ package br.com.team.seven.kubernetes.api.domain.service
 import br.com.team.seven.kubernetes.api.domain.dto.EndPoint
 import br.com.team.seven.kubernetes.api.domain.dto.ResponseServer
 import br.com.team.seven.kubernetes.api.domain.dto.ServiceDTO
+import io.kubernetes.client.apis.AppsV1beta1Api
 import io.kubernetes.client.apis.CoreV1Api
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpMethod
@@ -10,13 +11,14 @@ import org.springframework.stereotype.Service
 import org.springframework.web.client.RestTemplate
 
 @Service
-class KubernetesService(private val api: CoreV1Api,
+class KubernetesService(private val coreV1Api: CoreV1Api,
+                        private val appsV1beta1Api: AppsV1beta1Api,
                         private val restTemplate: RestTemplate) {
 
 
     fun listServiceDetails(): List<ServiceDTO> {
 
-        val listService = api.listNamespacedService("default", null, null, null, null, null, null, null, null, null)
+        val listService = coreV1Api.listNamespacedService("default", null, null, null, null, null, null, null, null, null)
 
         val services = mutableListOf<ServiceDTO>()
 
@@ -47,7 +49,7 @@ class KubernetesService(private val api: CoreV1Api,
     }
 
     fun delete() {
-       // api.deleteNamespaceAsync()
-
+        appsV1beta1Api.deleteNamespacedDeployment("ignoble-dingo-minecraft","deafult",null,null,null,null,null)
+        coreV1Api.deleteNamespacedService("ignoble-dingo","deafult",null,null,null,null,null)
     }
 }
