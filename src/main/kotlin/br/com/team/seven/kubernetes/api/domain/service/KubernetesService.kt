@@ -5,6 +5,7 @@ import br.com.team.seven.kubernetes.api.domain.dto.ResponseServer
 import br.com.team.seven.kubernetes.api.domain.dto.ServiceDTO
 import io.kubernetes.client.apis.AppsV1beta1Api
 import io.kubernetes.client.apis.CoreV1Api
+import io.kubernetes.client.models.V1DeleteOptions
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpMethod
 import org.springframework.stereotype.Service
@@ -48,8 +49,18 @@ class KubernetesService(private val coreV1Api: CoreV1Api,
         return services
     }
 
-    fun delete() {
-        appsV1beta1Api.deleteNamespacedDeployment("ignoble-dingo-minecraft","deafult",null,null,null,null,null)
-        coreV1Api.deleteNamespacedService("ignoble-dingo","deafult",null,null,null,null,null)
+    fun delete(name: String) {
+
+        try {
+            appsV1beta1Api.deleteNamespacedDeployment("$name-minecraft", "default", V1DeleteOptions(), null, 56, null, null)
+        } catch (ex: Exception) {
+            println("Sucesso")
+        }
+
+        try {
+            coreV1Api.deleteNamespacedService(name, "default", V1DeleteOptions(), null, null, null, null)
+        } catch (ex: Exception) {
+            println("Sucesso")
+        }
     }
 }

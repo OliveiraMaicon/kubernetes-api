@@ -14,8 +14,8 @@ class KubernetesApplication(private var kubernetesService: KubernetesService,
 
     fun executeCommand() : String = deploymentService.runCommand()
 
-    fun delete(){
-        kubernetesService.delete()
+    fun delete(name : String){
+        kubernetesService.delete(name)
     }
 
 }
