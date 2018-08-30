@@ -18,7 +18,7 @@ class ServiceController(val kubernetesApplication: KubernetesApplication) {
     }
 
     @DeleteMapping("/deployments/{name}")
-    fun delete(/*@PathVariable("name") name: String*/): ResponseEntity<Any>{
+    fun delete(@PathVariable("name") name: String): ResponseEntity<Any>{
         return ResponseEntity.ok(kubernetesApplication.delete())
     }
 
