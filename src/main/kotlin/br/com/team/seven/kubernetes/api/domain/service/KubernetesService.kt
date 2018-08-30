@@ -1,12 +1,17 @@
 package br.com.team.seven.kubernetes.api.domain.service
 
-import br.com.team.seven.kubernetes.api.domain.EndPoint
-import br.com.team.seven.kubernetes.api.domain.ServiceDTO
+import br.com.team.seven.kubernetes.api.domain.dto.EndPoint
+import br.com.team.seven.kubernetes.api.domain.dto.ResponseServer
+import br.com.team.seven.kubernetes.api.domain.dto.ServiceDTO
 import io.kubernetes.client.apis.CoreV1Api
+import org.springframework.http.HttpEntity
+import org.springframework.http.HttpMethod
 import org.springframework.stereotype.Service
+import org.springframework.web.client.RestTemplate
 
 @Service
-class KubernetesService(var api: CoreV1Api) {
+class KubernetesService(private val api: CoreV1Api,
+                        private val restTemplate: RestTemplate) {
 
 
     fun listServiceDetails(): List<ServiceDTO> {
@@ -25,9 +30,11 @@ class KubernetesService(var api: CoreV1Api) {
             if (item.spec.selector != null) {
                 service.name = item.spec.selector["app"]
                 item.spec.ports.forEach {
-                    service.endPoints.add(EndPoint(it.name, ip, it.port))
+                    val url = "https://mcapi.us/server/status?ip=$ip&port=${it.port}"
+                    val response = restTemplate.exchange(url, HttpMethod.GET, HttpEntity.EMPTY, ResponseServer::class.java)
+                    val server = response.body!!
+                    service.endPoints.add(EndPoint(it.name, ip, it.port, server.players.max, server.players.now))
                 }
-                println(service.name)
             }
 
             if (!service.name.isNullOrEmpty()) {

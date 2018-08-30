@@ -1,4 +1,4 @@
-package br.com.team.seven.kubernetes.api.domain
+package br.com.team.seven.kubernetes.api.domain.dto
 
 data class ServiceDTO(var name: String?,
                       var endPoints: MutableList<EndPoint?>) {

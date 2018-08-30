@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RestController
 class ServiceController(val kubernetesApplication: KubernetesApplication) {
 
     @GetMapping("/services")
-    fun get() : ResponseEntity<Any>{
+    fun list() : ResponseEntity<Any>{
         return ResponseEntity.ok(kubernetesApplication.getServicesDetails())
     }
 }
