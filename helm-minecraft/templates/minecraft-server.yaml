@@ -1,0 +1,64 @@
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-minecraft
+spec:
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}
+  replicas: 1
+  template: 
+    metadata:
+      labels:
+        app: {{ .Release.Name }}
+      annotations:
+        prometheus.io/port: '9225'
+        prometheus.io/scrape: 'true'
+    spec:
+      containers:
+      - name: minecraft
+        image: openhack/minecraft-server:2.0
+        ports:
+        - name: games
+          containerPort: 25565
+        - name: rcon
+          containerPort: 25575
+        env:
+        - name: EULA
+          value: "TRUE"
+        - name: ENABLE_RCON
+          value: "TRUE"
+        volumeMounts:
+        - name: data
+          mountPath: /data          
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: {{ .Release.Name }}            
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }} 
+spec:
+  type: LoadBalancer
+  ports:
+  - name: game
+    port: 25565
+  - name: rcon
+    port: 25575
+  selector:
+    app: {{ .Release.Name }}  
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ .Release.Name }}
+spec:
+  accessModes:
+    - ReadWriteMany
+  storageClassName: azurefile 
+  resources:
+    requests:
+      storage: 5Gi

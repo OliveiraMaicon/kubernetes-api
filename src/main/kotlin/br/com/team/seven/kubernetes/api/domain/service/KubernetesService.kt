@@ -27,20 +27,27 @@ class KubernetesService(private val api: CoreV1Api,
                 ip = item.status.loadBalancer.ingress[0].ip
             }
 
-            if (item.spec.selector != null) {
-                service.name = item.spec.selector["app"]
-                item.spec.ports.forEach {
-                    val url = "https://mcapi.us/server/status?ip=$ip&port=${it.port}"
-                    val response = restTemplate.exchange(url, HttpMethod.GET, HttpEntity.EMPTY, ResponseServer::class.java)
-                    val server = response.body!!
-                    service.endPoints.add(EndPoint(it.name, ip, it.port, server.players.max, server.players.now))
+            if (!ip.isNullOrEmpty()) {
+                if (item.spec.selector != null) {
+                    service.name = item.spec.selector["app"]
+                    item.spec.ports.forEach {
+                        val url = "https://mcapi.us/server/status?ip=$ip&port=${it.port}"
+                        val response = restTemplate.exchange(url, HttpMethod.GET, HttpEntity.EMPTY, ResponseServer::class.java)
+                        val server = response.body!!
+                        service.endPoints.add(EndPoint(it.name, ip, it.port, server.players.max, server.players.now))
+                    }
+                }
+                if (!service.name.isNullOrEmpty()) {
+                    services.add(service)
                 }
             }
 
-            if (!service.name.isNullOrEmpty()) {
-                services.add(service)
-            }
         }
         return services
+    }
+
+    fun delete() {
+       // api.deleteNamespaceAsync()
+
     }
 }

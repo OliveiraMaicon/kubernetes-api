@@ -9,29 +9,25 @@ import java.util.concurrent.Executors
 @Service
 class DeploymentService {
 
+    fun runCommand(): String {
 
-    companion object {
+        val response = Runtime.getRuntime().exec("helm install helm-minecraft")
+
+        return response.inputStream.bufferedReader().readLine()
+
+    }
+
+    /*companion object {
         @JvmStatic
         fun main(args: Array<String>){
-            val response = Runtime.getRuntime().exec("ls -ll")
+
+            val response = Runtime.getRuntime().exec("helm list")
 
             println(response.inputStream.bufferedReader().readLine())
 
-        }
-    }
-    fun teste() {
 
-        /*val builder = ProcessBuilder()
-        builder.command("sh", "-c", "ls")
-        builder.directory(File(System.getProperty("user.home")))
-        val process = builder.start()
-        val healmRunner = HealmRunner(process.inputStream, ::println)*/
-         Runtime.getRuntime().exec("")
-        /*Executors.newSingleThreadExecutor().submit(healmRunner)
-        val exitCode = process.waitFor()
-        assert(exitCode == 0)
-*/
-    }
+        }
+    }*/
 
 
 }
